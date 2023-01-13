@@ -1,8 +1,8 @@
-use std::{fmt::Display, f64::consts::PI, ops::{Neg, Add, Sub, Mul, Div}, cmp::min};
+use std::{fmt::Display, f64::consts::PI, ops::{Neg, Add, Sub, Mul, Div, DivAssign, AddAssign, SubAssign, MulAssign}, cmp::min, mem::swap};
 
 use crate::complex::Complex;
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub struct Fs {
     pub numer: Vec<f64>,
     pub denom: Vec<f64>,
@@ -66,6 +66,18 @@ impl Fs {
         Fs::merge_freq(&self.numer, freq, self.prec) / Fs::merge_freq(&self.denom, freq, self.prec)
     }
 
+    pub fn scale(mut self, scale: f64) -> Self {
+        for term in self.numer.iter_mut() {
+            *term *= scale;
+        }
+        self
+    }
+
+    pub fn invert(mut self) -> Self {
+        swap(&mut self.numer, &mut self.denom);
+        self
+    }
+
     fn accumulate<T>(bucket: T) -> Vec<f64> where
         T: IntoIterator<Item = Vec<f64>>,
         T::Item: IntoIterator,
@@ -86,11 +98,10 @@ impl Fs {
         sum
     }
 
-    fn multiply_helper(lhs: Vec<f64>, rhs: Vec<f64>) -> Vec<f64> {
+    fn multiply_helper(lhs: &Vec<f64>, rhs: &Vec<f64>) -> Vec<f64> {
         let mut bucket: Vec::<Vec::<f64>> = rhs.into_iter()
             .map(|rhs_coeff| {
-                lhs.clone()
-                    .into_iter()
+                lhs.into_iter()
                     .map(|x| x*rhs_coeff)
                     .collect()
             })
@@ -125,77 +136,111 @@ impl Neg for Fs {
     type Output = Fs;
 
     fn neg(self) -> Self::Output {
-        Self{numer:self.numer.iter().map(|x| x*-1.0).collect(), denom:self.denom, prec:self.prec}
+        Fs{numer:self.numer.iter().map(|x| x*-1.0).collect(), denom:self.denom, prec:self.prec}
     }
 }
 
-impl Add for Fs {
+impl<'b> Add<&'b Fs> for Fs {
     type Output = Fs;
 
-    fn add(self, rhs: Self) -> Self::Output {
+    fn add(self, rhs: &'b Fs) -> Self::Output {
+        let mut toreturn = self.clone();
+        toreturn += rhs;
+        toreturn
+    }
+}
+
+impl<'b> Sub<&'b Fs> for Fs {
+    type Output = Fs;
+
+    fn sub(self, rhs: &'b Fs) -> Self::Output {
+        self + &-rhs.clone()
+    }
+}
+
+impl<'b> Mul<&'b Fs> for Fs {
+    type Output = Fs;
+
+    fn mul(self, rhs: &'b Fs) -> Self::Output {
+        let mut toreturn = self.clone();
+        toreturn *= rhs;
+        toreturn
+    }
+}
+
+impl<'b> Div<&'b Fs> for Fs {
+    type Output = Fs;
+
+    fn div(self, rhs: &'b Fs) -> Self::Output {
+        let mut toreturn = self.clone();
+        toreturn /= rhs;
+        toreturn
+    }
+}
+
+impl<'b> AddAssign<&'b Fs> for Fs {
+    fn add_assign(&mut self, rhs: &'b Fs) {
         if self.denom == rhs.denom {
-            Self{
-                numer: Self::accumulate([self.numer, rhs.numer]),
-                denom: self.denom,
-                prec: min(self.prec, rhs.prec)
-            }
+            self.numer = Fs::accumulate([self.numer.clone(), rhs.numer.clone()]);
+            self.prec = min(self.prec, rhs.prec);
         } else {
             let lhs_denom = self.denom.clone();
             let rhs_denom = rhs.denom.clone();
-            Self{
-                denom: Self::multiply_helper(self.denom , rhs.denom),
-                numer: Self::accumulate([
-                    Self::multiply_helper(self.numer, rhs_denom),
-                    Self::multiply_helper(rhs.numer, lhs_denom)
-                    ]),
-                prec: min(self.prec, rhs.prec)
-            }
+            self.denom = Fs::multiply_helper(&self.denom, &rhs.denom);
+            self.numer = Fs::accumulate([
+                    Fs::multiply_helper(&self.numer, &rhs_denom),
+                    Fs::multiply_helper(&rhs.numer, &lhs_denom)
+                    ]);
+            self.prec = min(self.prec, rhs.prec);
         }
     }
 }
 
-impl Sub for Fs {
-    type Output = Fs;
-
-    fn sub(self, rhs: Self) -> Self::Output {
-        self + (-rhs)
+impl<'b> SubAssign<&'b Fs> for Fs {
+    fn sub_assign(&mut self, rhs: &'b Fs) {
+        *self += &-rhs.clone();
     }
 }
 
-impl Mul for Fs {
-    type Output = Fs;
-
-    fn mul(self, rhs: Self) -> Self::Output {
-        Self{
-            numer: Self::multiply_helper(self.numer, rhs.numer),
-            denom: Self::multiply_helper(self.denom, rhs.denom),
-            prec: min(self.prec, rhs.prec),
-        }
+impl<'b> MulAssign<&'b Fs> for Fs {
+    fn mul_assign(&mut self, rhs: &'b Fs) {
+        self.numer = Fs::multiply_helper(&self.numer, &rhs.numer);
+        self.denom = Fs::multiply_helper(&self.denom, &rhs.denom);
+        self.prec = min(self.prec, rhs.prec);
     }
 }
 
-impl Div for Fs {
-    type Output = Fs;
-
-    fn div(self, rhs: Self) -> Self::Output {
-        Self{
-            numer: Self::multiply_helper(self.numer, rhs.denom),
-            denom: Self::multiply_helper(self.denom, rhs.numer),
-            prec: min(self.prec, rhs.prec),
-        }
+impl<'b> DivAssign<&'b Fs> for Fs {
+    fn div_assign(&mut self, rhs: &'b Fs) {
+        self.numer = Fs::multiply_helper(&self.numer, &rhs.denom);
+        self.denom = Fs::multiply_helper(&self.denom, &rhs.numer);
+        self.prec = min(self.prec, rhs.prec);
     }
 }
+
 
 pub mod gen {
     use super::Fs;
 
-    pub fn s(prec: usize) -> Fs {Fs{numer:vec![0.0, 1.0], denom:vec![1.0], prec}}
-    pub fn step(prec: usize) -> Fs {Fs{numer:vec![1.0], denom:vec![0.0, 1.0], prec}}
-    pub fn resistor(r: f64, prec: usize) -> Fs {Fs{numer:vec![r], denom:vec![1.0], prec}}
-    pub fn capacitor(c: f64, prec: usize) -> Fs {Fs{numer:vec![1.0], denom:vec![0.0, c], prec}}
-    pub fn inductor(l: f64, prec: usize) -> Fs {Fs{numer:vec![0.0, l], denom:vec![1.0], prec}}
+    pub fn unit_prec(prec: usize) -> Fs {Fs{numer:vec![1.0], denom:vec![1.0], prec}}
+    pub fn s_prec(prec: usize) -> Fs {Fs{numer:vec![0.0, 1.0], denom:vec![1.0], prec}}
+    pub fn step_prec(prec: usize) -> Fs {Fs{numer:vec![1.0], denom:vec![0.0, 1.0], prec}}
+    pub fn resistor_prec(r: f64, prec: usize) -> Fs {Fs{numer:vec![r], denom:vec![1.0], prec}}
+    pub fn capacitor_prec(c: f64, prec: usize) -> Fs {Fs{numer:vec![1.0], denom:vec![0.0, c], prec}}
+    pub fn inductor_prec(l: f64, prec: usize) -> Fs {Fs{numer:vec![0.0, l], denom:vec![1.0], prec}}
 
-    pub fn rcl(r: f64, c: f64, l: f64, prec: usize) -> Fs {Fs{numer:vec![1.0, r*c, l*c], denom:vec![0.0, c], prec}}
+    pub fn rl_prec(r: f64, l: f64, prec: usize) -> Fs {Fs{numer:vec![r, l], denom:vec![1.0], prec}}
+    pub fn rcl_prec(r: f64, c: f64, l: f64, prec: usize) -> Fs {Fs{numer:vec![1.0, r*c, l*c], denom:vec![0.0, c], prec}}
+
+    pub fn unit() -> Fs {unit_prec(3)}
+    pub fn s() -> Fs {s_prec(3)}
+    pub fn step() -> Fs {step_prec(3)}
+    pub fn resistor(r: f64) -> Fs {resistor_prec(r, 3)}
+    pub fn capacitor(c: f64) -> Fs {capacitor_prec(c, 3)}
+    pub fn inductor(l: f64) -> Fs {inductor_prec(l, 3)}
+
+    pub fn rl(r: f64, l: f64) -> Fs {rl_prec(r, l, 3)}
+    pub fn rcl(r: f64, c: f64, l: f64) -> Fs {rcl_prec(r, c, l, 3)}
 }
 
 #[cfg(test)]
@@ -245,6 +290,31 @@ mod tests {
         assert_eq!("-0.051 + 0.463i", format!("{converted}"));
     }
 
+    #[test]
+    fn scale_test() {
+        let scaled = Fs{
+            numer:vec![1.0, -2.0],
+            denom:vec![-1.0],
+            prec :1
+        }.scale(4.0);
+        assert_eq!("( 4.0e0 + -8.0e0s ) / ( -1.0e0 )", format!("{scaled}"));
+    }
+
+    #[test]
+    fn invert_test() {
+        let inverted = Fs{
+            numer:vec![1.0, -2.0],
+            denom:vec![-1.0],
+            prec :1
+        }.invert();
+        assert_eq!("( -1.0e0 ) / ( 1.0e0 + -2.0e0s )", format!("{inverted}"));
+    }
+}
+
+#[cfg(test)]
+mod conversion_tests {
+    use super::*;
+    
     #[test]
     fn fs2_complex_rad_test() {
         let converted = Complex::from_rad(
@@ -359,7 +429,7 @@ mod arith_tests {
         // 0.0  12.0    -6.0    3.0
         // ------------------------
         // 2.0  11.0    -5.5    3.0
-        assert_eq!("[2.0, 11.0, -5.5, 3.0]", format!("{:?}", Fs::multiply_helper(lhs, rhs)));
+        assert_eq!("[2.0, 11.0, -5.5, 3.0]", format!("{:?}", Fs::multiply_helper(&lhs, &rhs)));
     }
 
     #[test]
@@ -374,7 +444,7 @@ mod arith_tests {
         // 12.0 2.0
         assert_eq!(
             "( 2.5e0 + 4.8e0s + -2.5e-1s^2 + 5.0e-1s^3 ) / ( 1.2e1 + 2.0e0s )",
-            format!("{}", lhs * rhs)
+            format!("{}", lhs * &rhs)
         );
     }
 
@@ -390,7 +460,7 @@ mod arith_tests {
         // 10.0 -1.0 1.0
         assert_eq!(
             "( 3.0e0 + 6.5e0s + 1.0e0s^2 ) / ( 1.0e1 + -1.0e0s + 1.0e0s^2 )",
-            format!("{}", lhs / rhs)
+            format!("{}", lhs / &rhs)
         );
     }
 
@@ -401,7 +471,7 @@ mod arith_tests {
 
         assert_eq!(
             "( 3.5e0 + 1.8e0s + 2.5e-1s^2 ) / ( 4.0e0 )",
-            format!("{}", lhs + rhs)
+            format!("{}", lhs + &rhs)
         );
     }
 
@@ -422,7 +492,7 @@ mod arith_tests {
         // 12.0 2.0
         assert_eq!(
             "( 1.3e1 + 5.5e0s + 2.0e0s^2 ) / ( 1.2e1 + 2.0e0s )",
-            format!("{}", lhs + rhs)
+            format!("{}", lhs + &rhs)
         );
     }
 
@@ -439,7 +509,93 @@ mod arith_tests {
         // 12.0 2.0
         assert_eq!(
             "( -7.0e0 + 7.5e0s + 0.0e0s^2 ) / ( 1.2e1 + 2.0e0s )",
-            format!("{}", lhs - rhs)
+            format!("{}", lhs - &rhs)
+        );
+    }
+
+    #[test]
+    fn mul_assign_test() {
+        let (mut lhs, rhs) = gen_factors();
+        lhs *= &rhs;
+        // numer
+        // 2.50 -0.25   0.25
+        // 0.00 5.00    -0.50   0.5
+        // ------------------------
+        // 2.50 4.75    -0.25   0.5
+        //denom
+        // 12.0 2.0
+        assert_eq!(
+            "( 2.5e0 + 4.8e0s + -2.5e-1s^2 + 5.0e-1s^3 ) / ( 1.2e1 + 2.0e0s )",
+            format!("{}", lhs)
+        );
+    }
+
+    #[test]
+    fn div_assign_test() {
+        let (mut lhs, rhs) = gen_factors();
+        lhs /= &rhs;
+        // numer
+        // 3.0  0.5
+        // 0.0  6.0 1.0
+        // ------------
+        // 3.0  6.5 1.0
+        //denom
+        // 10.0 -1.0 1.0
+        assert_eq!(
+            "( 3.0e0 + 6.5e0s + 1.0e0s^2 ) / ( 1.0e1 + -1.0e0s + 1.0e0s^2 )",
+            format!("{}", lhs)
+        );
+    }
+
+    #[test]
+    fn add_assign_eq_denom_test() {
+        let (mut lhs, mut rhs) = gen_factors();
+        rhs.denom = lhs.denom.clone();
+        lhs += &rhs;
+
+        assert_eq!(
+            "( 3.5e0 + 1.8e0s + 2.5e-1s^2 ) / ( 4.0e0 )",
+            format!("{}", lhs)
+        );
+    }
+
+    #[test]
+    fn add_assign_diff_denom_test() {
+        let (mut lhs, rhs) = gen_factors();
+        lhs += &rhs;
+
+        // lhs.numer*rhs.denom
+        // 3.0  0.5
+        // 0.0  6.0 1.0
+        // ------------
+        // 3.0  6.5 1.0
+        // lhs.denom*rhs.numer
+        // 10.0 -1.0 1.0
+        // lhs.numer*rhs.denom + lhs.denom*rhs.numer
+        // 13.0 5.5 2.0
+        // lhs.denom*rhs.denom
+        // 12.0 2.0
+        assert_eq!(
+            "( 1.3e1 + 5.5e0s + 2.0e0s^2 ) / ( 1.2e1 + 2.0e0s )",
+            format!("{}", lhs)
+        );
+    }
+
+    #[test]
+    fn sub_assign_test() {
+        let (mut lhs, rhs) = gen_factors();
+        lhs -= &rhs;
+
+        // lhs.numer*rhs.denom + lhs.denom*rhs.numer
+        // 3.0      6.5 1.0
+        // -10.0    1.0 -1.0
+        // -----------------
+        // -7.0     7.5 0.0
+        // lhs.denom*rhs.denom
+        // 12.0 2.0
+        assert_eq!(
+            "( -7.0e0 + 7.5e0s + 0.0e0s^2 ) / ( 1.2e1 + 2.0e0s )",
+            format!("{}", lhs)
         );
     }
 }
@@ -451,31 +607,31 @@ mod gen_tests {
 
     #[test]
     fn gen_s_test() {
-        assert_eq!("( 0.0e0 + 1.0e0s ) / ( 1.0e0 )", format!("{}", gen::s(1)));
+        assert_eq!("( 0.0e0 + 1.0e0s ) / ( 1.0e0 )", format!("{}", gen::s_prec(1)));
     }
 
     #[test]
     fn gen_step_test() {
-        assert_eq!("( 1.0e0 ) / ( 0.0e0 + 1.0e0s )", format!("{}", gen::step(1)));
+        assert_eq!("( 1.0e0 ) / ( 0.0e0 + 1.0e0s )", format!("{}", gen::step_prec(1)));
     }
 
     #[test]
     fn gen_resistor_test() {
-        assert_eq!("( 4.36e1 ) / ( 1.00e0 )", format!("{}", gen::resistor(43.6, 2)));
+        assert_eq!("( 4.36e1 ) / ( 1.00e0 )", format!("{}", gen::resistor_prec(43.6, 2)));
     }
 
     #[test]
     fn gen_capacitor_test() {
-        assert_eq!("( 1.00e0 ) / ( 0.00e0 + 4.36e1s )", format!("{}", gen::capacitor(43.6, 2)));
+        assert_eq!("( 1.00e0 ) / ( 0.00e0 + 4.36e1s )", format!("{}", gen::capacitor_prec(43.6, 2)));
     }
 
     #[test]
     fn gen_inductor_test() {
-        assert_eq!("( 0.00e0 + 4.36e1s ) / ( 1.00e0 )", format!("{}", gen::inductor(43.6, 2)));
+        assert_eq!("( 0.00e0 + 4.36e1s ) / ( 1.00e0 )", format!("{}", gen::inductor_prec(43.6, 2)));
     }
 
     #[test]
     fn gen_rcl_test() {
-        assert_eq!("( 1.0e0 + 2.2e1s + 6.0e0s^2 ) / ( 0.0e0 + 2.0e0s )", format!("{}", gen::rcl(11.0, 2.0, 3.0, 1)));
+        assert_eq!("( 1.0e0 + 2.2e1s + 6.0e0s^2 ) / ( 0.0e0 + 2.0e0s )", format!("{}", gen::rcl_prec(11.0, 2.0, 3.0, 1)));
     }
 }

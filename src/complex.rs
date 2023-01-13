@@ -23,6 +23,10 @@ impl Complex {
         f64::sqrt(f64::powf(self.real, 2.0) + f64::powf(self.imag, 2.0))
     }
 
+    pub fn mag_20log(&self) -> f64 {
+        20.0*self.mag().log10()
+    }
+
     pub fn phase(&self) -> f64 {
         f64::atan(self.imag / self.real)
     }
