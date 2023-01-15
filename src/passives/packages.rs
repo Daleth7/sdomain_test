@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+/// Represents different types of component packaging
 #[derive(Debug, Copy, Clone, PartialEq)]
 pub enum Package {
     SMD_0603M,

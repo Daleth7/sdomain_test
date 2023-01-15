@@ -8,10 +8,62 @@ pub mod pdn_plotter {
     use crate::range_generators::gen_log_range;
     type DrawAreaType<'a> = DrawingArea <BitMapBackend<'a>, plotters::coord::Shift>;
 
+    /// Plot a PDN's impedance model over frequency. Optionally, an impedance
+    /// target can be specified to highlight at what frequencies the PDN
+    /// model exceeds the target.
+    /// Returns a result to indicate if the function executed without error.
+    /// 
+    /// # Arguments
+    /// * `model` - A power distribution network model.
+    /// * `canvas` - A Plotter's DrawingArea on which to draw the impedance plot.
+    /// * `impedance_target` - (Optional) If specified, the data is plotted
+    ///                                   as an area curve to show at which
+    ///                                   frequencies the impedance exceeds
+    ///                                   the target.
+    /// 
+    /// # Examples
+    /// ```
+    /// use complextest::pdn_impedance_plotter::pdn_plotter;
+    /// 
+    /// use plotters::prelude::*;
+    /// use complextest::passives::capacitor::Capacitor;
+    /// use complextest::pdn::PDNModel;
+    /// use complextest::sdomain;
+    ///
+    /// // Prepare the drawing area
+    /// let area_dims = (960, 720);
+    /// let drawing_area = BitMapBackend::new("images/pdn_impedance.png", area_dims)
+    ///     .into_drawing_area();
+    ///
+    /// drawing_area.fill(&WHITE).unwrap();
+    ///
+    /// // Prepare the PDN network to plot
+    /// let mut pdn = PDNModel::from(sdomain::gen::rl(52e-3, 1.5e-6), None);
+    /// pdn.add_capacitor("0603 22uF", Capacitor::from(22e-6, "0603").model(), 1);
+    /// pdn.add_capacitor("0201 2.2nF", Capacitor::from(2.2e-9, "0201").model(), 4);
+    /// pdn.add_capacitor("0201 100nF", Capacitor::from(100e-9, "0201").model(), 3);
+    /// pdn.add_capacitor("~25kHz", Capacitor::from_resonant(25e3, 100e3).unwrap().model(), 1);
+    /// 
+    /// // Plot the PDN network and set 100mΩ as the target impedance.
+    /// pdn_plotter::plot(&pdn, &drawing_area, Some(0.1/*Ω*/)).unwrap();
+    /// ```
     pub fn plot(model: &PDNModel, canvas: &DrawAreaType, impedance_target: Option<f64>) -> Result<(), Box <dyn std::error::Error>> {
         draw(canvas, "PDN", model.model(), impedance_target)
     }
 
+    /// Plot an s-domain model as impedance over frequency. Optionally, an impedance
+    /// target can be specified to highlight at what frequencies the model exceeds
+    /// the target.
+    /// Returns a result to indicate if the function executed without error.
+    /// 
+    /// # Arguments
+    /// * `canvas` - A Plotter's DrawingArea on which to draw the impedance plot.
+    /// * `name` - Model name to print in the plot title.
+    /// * `model` - An impedance model in the s-domain.
+    /// * `impedance_target` - (Optional) If specified, the data is plotted
+    ///                                   as an area curve to show at which
+    ///                                   frequencies the impedance exceeds
+    ///                                   the target.
     fn draw(canvas: &DrawAreaType, name: &str, model: Fs, impedance_target: Option<f64>) -> Result<(), Box <dyn std::error::Error>> {
         const MAX_FREQ: f64 = 100e6;
         let freq_data = gen_log_range(1.0, MAX_FREQ, 10.0, 100);

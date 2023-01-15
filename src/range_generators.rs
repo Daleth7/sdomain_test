@@ -1,12 +1,49 @@
 use std::ops::{Mul, MulAssign, Div};
 
-
+/// Generate a range of values logramithically.
+/// 
+/// # Arguments
+/// * `start`    - Starting value in the range
+/// * `end`      - End of the range, non-inclusive
+/// * `radix`    - Number base
+/// * `division` - Amount of numbers to generate for each power of radix
+/// 
+/// # Examples
+/// ```
+/// use complextest::range_generators::gen_log_range;
+/// 
+/// let log10_range = gen_log_range(1, 1000, 10, 10);
+/// assert_eq!(
+///     vec![
+///         1, 2, 3, 4, 5, 6, 7, 8, 9,
+///         10, 20, 30, 40, 50, 60, 70, 80, 90,
+///         100, 200, 300, 400, 500, 600, 700, 800, 900
+///     ],
+///     log10_range
+/// );
+/// 
+/// // Use a different number base and generate floating points instead of integers
+/// let log3f_range = gen_log_range(1.0, 30.0, 3.0, 3);
+/// assert_eq!("[ 1.0, 2.0, 3.0, 6.0, 9.0, 18.0, 27.0, ]", vec2str(&log3f_range));
+/// 
+/// // Use more divisions per power
+/// let log10f_range = gen_log_range(1.0, 25.0, 10.0, 20);
+/// assert_eq!("[ 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 7.5, 8.0, 8.5, 9.0, 9.5, 10.0, 15.0, 20.0, ]", vec2str(&log10f_range));
+/// 
+/// fn vec2str(collection: &Vec<f64>) -> String {
+///     let mut result = "[ ".to_string();
+///     for n in collection {
+///         result.push_str(&format!("{:.1}, ", n));
+///     }
+///     result.push_str("]");
+///     result
+/// }
+/// ```
 pub fn gen_log_range<T>(mut start: T, end: T, radix: T, divisions: i32) -> Vec<T> where
-    T: Mul + MulAssign + Div + PartialOrd + From<i32> + Copy,
-    Vec<T>: FromIterator<<T as Mul>::Output>,
-    <T as Mul>::Output: PartialOrd<T>,
-    <T as Mul>::Output: Mul<<T as Div>::Output>,
-    <T as Div>::Output: Div<<T as Mul>::Output> + Copy, Vec<T>: FromIterator<<<T as Mul>::Output as Mul<<T as Div>::Output>>::Output>,
+    T: Mul<Output = <T as Div>::Output> + MulAssign + Div + PartialOrd + From<i32> + Copy,
+    <T as Div>::Output: Mul,
+    <T as Div>::Output: Copy,
+    Vec<T>: FromIterator<<<T as Mul>::Output as Mul<<T as Div>::Output>>::Output>,
     <<T as Mul>::Output as Mul<<T as Div>::Output>>::Output: PartialOrd<T>
 {
     let gain = radix / T::from(divisions);
