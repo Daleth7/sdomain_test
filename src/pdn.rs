@@ -32,9 +32,9 @@ impl PDNModel {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::pdn::PDNModel;
-    /// use complextest::sdomain::gen;
-    /// use complextest::passives::capacitor::Capacitor;
+    /// use sdomain_test::pdn::PDNModel;
+    /// use sdomain_test::sdomain::gen;
+    /// use sdomain_test::passives::capacitor::Capacitor;
     /// 
     /// // Create a PDN with just the inductor and no output caps. Useful if the
     /// // output caps. will be added later.
@@ -63,9 +63,9 @@ impl PDNModel {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::pdn::PDNModel;
-    /// use complextest::sdomain::gen;
-    /// use complextest::passives::capacitor::Capacitor;
+    /// use sdomain_test::pdn::PDNModel;
+    /// use sdomain_test::sdomain::gen;
+    /// use sdomain_test::passives::capacitor::Capacitor;
     /// 
     /// let mut pdn = PDNModel::from(gen::rl(0.025/*Ω*/, 330e-9/*H*/), None);
     /// 
@@ -88,9 +88,9 @@ impl PDNModel {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::pdn::PDNModel;
-    /// use complextest::sdomain::gen;
-    /// use complextest::passives::capacitor::Capacitor;
+    /// use sdomain_test::pdn::PDNModel;
+    /// use sdomain_test::sdomain::gen;
+    /// use sdomain_test::passives::capacitor::Capacitor;
     /// 
     /// let mut pdn = PDNModel::from(gen::rl(0.025/*Ω*/, 330e-9/*H*/), None);
     /// pdn.add_capacitor("89μF (derated) ceramic (2012M)", gen::rcl(0.003/*Ω*/, 89e-6/*F*/, 1.2e-9/*H*/), 2);

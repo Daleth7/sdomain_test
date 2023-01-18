@@ -25,7 +25,7 @@ impl Complex {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// assert_eq!("1.000e0 + -2.000e0i", format!("{}", Complex::new(1.0, -2.0)));
     /// ```
@@ -42,7 +42,7 @@ impl Complex {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// assert_eq!("1.0e0 + -2.0e0i", format!("{}", Complex::new_prec(1.0, -2.0, 1)));
     /// ```
@@ -54,7 +54,7 @@ impl Complex {
     ///
     /// # Examples
     /// ```
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// let mag = Complex::new(3.0, 4.0).mag();
     /// assert_eq!("5.0", format!("{:.1}", mag));
@@ -67,7 +67,7 @@ impl Complex {
     ///
     /// # Examples
     /// ```
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// let mut mag_20log = Complex::new(3.0, 4.0).mag_20log();
     /// assert_eq!("13.979", format!("{:.3}", mag_20log));
@@ -83,7 +83,7 @@ impl Complex {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// let phase = Complex::new(3.0, 4.0).phase();
     /// assert_eq!("0.927", format!("{:.3}", phase));
@@ -96,7 +96,7 @@ impl Complex {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// let phase_deg = Complex::new(3.0, 4.0).phase_deg();
     /// assert_eq!("53.130", format!("{:.3}", phase_deg));
@@ -109,7 +109,7 @@ impl Complex {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// let c = Complex::new_prec(3.0, 4.0, 1);
     /// assert_eq!("3.0e0 + -4.0e0i", format!("{:}", c.conjugate()));

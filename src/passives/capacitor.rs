@@ -7,8 +7,8 @@ use crate::sdomain::{self, Fs};
 /// 
 /// # Examples
 /// ```
-/// use complextest::passives::capacitor::Capacitor;
-/// use complextest::passives::packages::Package;
+/// use sdomain_test::passives::capacitor::Capacitor;
+/// use sdomain_test::passives::packages::Package;
 /// 
 /// let mut cap = Capacitor{
 ///     val: 10e-6,   //F
@@ -54,8 +54,8 @@ impl Capacitor {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::passives::capacitor::Capacitor;
-    /// use complextest::passives::packages::Package;
+    /// use sdomain_test::passives::capacitor::Capacitor;
+    /// use sdomain_test::passives::packages::Package;
     /// 
     /// let cap = Capacitor{
     ///     val:3.0e-6,   //F
@@ -78,9 +78,9 @@ impl Capacitor {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::passives::capacitor::Capacitor;
-    /// use complextest::passives::packages::Package;
-    /// use complextest::sdomain::Fs;
+    /// use sdomain_test::passives::capacitor::Capacitor;
+    /// use sdomain_test::passives::packages::Package;
+    /// use sdomain_test::sdomain::Fs;
     /// 
     /// let cap = Capacitor{
     ///     val:1.0e-6,  //F
@@ -106,7 +106,7 @@ impl Capacitor {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::passives::capacitor::Capacitor;
+    /// use sdomain_test::passives::capacitor::Capacitor;
     /// 
     /// let cap1 = Capacitor::from(4.7e-6, "0805");
     /// assert_eq!(
@@ -149,7 +149,7 @@ impl Capacitor {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::passives::capacitor::Capacitor;
+    /// use sdomain_test::passives::capacitor::Capacitor;
     /// 
     /// let cap = Capacitor::from_resonant(28.677e6, 0.01e6).unwrap();
     /// assert_eq!(

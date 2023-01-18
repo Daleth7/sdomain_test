@@ -10,7 +10,7 @@ use std::ops::{Mul, MulAssign, Div};
 /// 
 /// # Examples
 /// ```
-/// use complextest::range_generators::gen_log_range;
+/// use sdomain_test::range_generators::gen_log_range;
 /// 
 /// let log10_range = gen_log_range(1, 1000, 10, 10);
 /// assert_eq!(

@@ -127,7 +127,7 @@ impl Fs {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
+    /// use sdomain_test::sdomain::Fs;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0, 3.0], denom: vec![4.0, 5.0, 6.0], prec:1};
     /// assert_eq!(
@@ -151,7 +151,7 @@ impl Fs {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
+    /// use sdomain_test::sdomain::Fs;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0, 3.0], denom: vec![4.0, 5.0, 6.0], prec:1};
     /// assert_eq!(
@@ -176,8 +176,8 @@ impl Fs {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::sdomain::Fs;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0], denom: vec![-0.5, 2.5], prec: 1};
     /// assert_eq!("8.0e-1 + -5.6e-5i", format!("{}", fs.calculate_rad(10e3)));
@@ -195,8 +195,8 @@ impl Fs {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::sdomain::Fs;
+    /// use sdomain_test::complex::Complex;
     /// use std::f64::consts::PI;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0], denom: vec![-0.5, 2.5], prec: 1};
@@ -214,7 +214,7 @@ impl Fs {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
+    /// use sdomain_test::sdomain::Fs;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0], denom: vec![-0.5, 2.5], prec: 1};
     /// assert_eq!(
@@ -240,7 +240,7 @@ impl Fs {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
+    /// use sdomain_test::sdomain::Fs;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0], denom: vec![-0.5, 2.5], prec: 1};
     /// assert_eq!(
@@ -347,8 +347,8 @@ impl Complex {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::sdomain::Fs;
+    /// use sdomain_test::complex::Complex;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0], denom: vec![-0.5, 2.5], prec: 1};
     /// assert_eq!("8.0e-1 + -5.6e-5i", format!("{}", Complex::from_rad(fs, 10e3)));
@@ -366,8 +366,8 @@ impl Complex {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::Fs;
-    /// use complextest::complex::Complex;
+    /// use sdomain_test::sdomain::Fs;
+    /// use sdomain_test::complex::Complex;
     /// use std::f64::consts::PI;
     /// 
     /// let fs = Fs{numer: vec![1.0, 2.0], denom: vec![-0.5, 2.5], prec: 1};
@@ -484,7 +484,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 0.000e0 ) / ( 1.000e0 )", format!("{}", gen::zero_prec(3)));
     /// ```
@@ -496,7 +496,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 ) / ( 1.000e0 )", format!("{}", gen::unit_prec(3)));
     /// ```
@@ -508,7 +508,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 0.000e0 + 1.000e0s ) / ( 1.000e0 )", format!("{}", gen::s_prec(3)));
     /// ```
@@ -520,7 +520,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 ) / ( 0.000e0 + 1.000e0s )", format!("{}", gen::step_prec(3)));
     /// ```
@@ -533,7 +533,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 2.000e1 ) / ( 1.000e0 )", format!("{}", gen::resistor_prec(20.0, 3)));
     /// ```
@@ -546,7 +546,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 ) / ( 0.000e0 + 3.300e-6s )", format!("{}", gen::capacitor_prec(3.3e-6, 3)));
     /// ```
@@ -559,7 +559,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 0.000e0 + 3.300e-6s ) / ( 1.000e0 )", format!("{}", gen::inductor_prec(3.3e-6, 3)));
     /// ```
@@ -574,7 +574,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 4.000e-2 + 3.300e-6s ) / ( 1.000e0 )", format!("{}", gen::rl_prec(0.04, 3.3e-6, 3)));
     /// ```
@@ -589,7 +589,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 + 6.600e-9s + 4.950e-15s² ) / ( 0.000e0 + 3.300e-6s )", format!("{}", gen::rcl_prec(2e-3, 3.3e-6, 1.5e-9, 3)));
     /// ```
@@ -601,7 +601,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 0.000e0 ) / ( 1.000e0 )", format!("{}", gen::zero()));
     /// ```
@@ -610,7 +610,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 ) / ( 1.000e0 )", format!("{}", gen::unit()));
     /// ```
@@ -619,7 +619,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 0.000e0 + 1.000e0s ) / ( 1.000e0 )", format!("{}", gen::s()));
     /// ```
@@ -628,7 +628,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 ) / ( 0.000e0 + 1.000e0s )", format!("{}", gen::step()));
     /// ```
@@ -640,7 +640,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 2.000e1 ) / ( 1.000e0 )", format!("{}", gen::resistor(20.0)));
     /// ```
@@ -652,7 +652,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 ) / ( 0.000e0 + 3.300e-6s )", format!("{}", gen::capacitor(3.3e-6)));
     /// ```
@@ -664,7 +664,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 0.000e0 + 3.300e-6s ) / ( 1.000e0 )", format!("{}", gen::inductor(3.3e-6)));
     /// ```
@@ -678,7 +678,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 4.000e-2 + 3.300e-6s ) / ( 1.000e0 )", format!("{}", gen::rl(0.04, 3.3e-6)));
     /// ```
@@ -692,7 +692,7 @@ pub mod gen {
     /// 
     /// # Examples
     /// ```
-    /// use complextest::sdomain::gen;
+    /// use sdomain_test::sdomain::gen;
     /// 
     /// assert_eq!("( 1.000e0 + 6.600e-9s + 4.950e-15s² ) / ( 0.000e0 + 3.300e-6s )", format!("{}", gen::rcl(2e-3, 3.3e-6, 1.5e-9)));
     /// ```
@@ -717,7 +717,7 @@ pub mod gen {
 /// 
 /// # Examples
 /// ```
-/// use complextest::sdomain::{Fs, parallel};
+/// use sdomain_test::sdomain::{Fs, parallel};
 /// 
 /// let model1 = Fs{
 ///     numer:vec![1.0, 2.0, 3.0],
@@ -756,7 +756,7 @@ pub fn parallel(fs1: Fs, fs2: Fs) -> Fs {
 /// 
 /// # Examples
 /// ```
-/// use complextest::sdomain::{Fs, parallel_multi};
+/// use sdomain_test::sdomain::{Fs, parallel_multi};
 /// 
 /// let models = [
 ///     Fs{
